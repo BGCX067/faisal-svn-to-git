@@ -1,0 +1,112 @@
+-- Add Foreign Key
+IF NOT EXISTS (SELECT o.[NAME] FROM sysobjects o WHERE o.[Name] ='ForeignKeyName')
+	ALTER TABLE ForeignKeyTable
+		WITH CHECK ADD  CONSTRAINT ForeignKeyName
+		FOREIGN KEY(Column1, Column2)
+		REFERENCES PrimaryKeyTable (Column1, Column2)
+		
+-- Create Table
+IF NOT EXISTS (SELECT o.[NAME] FROM sysobjects o WHERE o.[Name] ='TableName')
+	CREATE TABLE TableName(
+		Co_ID SMALLINT NOT NULL,
+		Column1 INT NOT NULL,
+		Column2 INT NOT NULL,
+		[Stamp_UserID] INT NOT NULL,
+		[Stamp_DateTime] DATETIME NOT NULL,
+		[Upload_DateTime] DATETIME NULL,
+		[RecordStatus_ID] INT NOT NULL,
+	 CONSTRAINT [PK_TableName] PRIMARY KEY CLUSTERED
+	(
+		Column1 ASC,
+		Column2 ASC
+	))
+	
+-- Add Menu
+IF NOT EXISTS (SELECT * FROM Base_Menu WHERE Menu_ID = ###)
+	INSERT INTO [Base_Menu]
+		([Menu_Id], [Menu_Desc], [Form_Code], [Display_Order], [Parent_Menu_Id]
+		,[Stamp_UserId], [Stamp_DateTime], [Upload_DateTime], [RecordStatus_ID], [Form_ID])
+	VALUES
+		(###, '', '##-###', , 
+		, , '', NULL, 1, )
+		
+-- Unique Constraint
+IF NOT EXISTS (SELECT o.[NAME] FROM sysobjects o WHERE o.[Name] ='IX_ConstraintName')
+	ALTER TABLE TableName
+		ADD CONSTRAINT IX_ConstraintName UNIQUE
+		(
+		Column1 ASC,
+		Column2 ASC
+		)
+		
+-- Add Column
+IF NOT EXISTS (SELECT o.[NAME] FROM sysobjects o INNER JOIN syscolumns c ON o.id = c.id WHERE o.[Name] ='TableName' AND c.[Name] = 'ColumnName')
+	ALTER TABLE TableName
+		ADD ColumnName VARCHAR(50) NOT NULL
+
+-- Insert Base_Setting		
+IF NOT EXISTS (SELECT * FROM Base_Setting WHERE Setting_ID = 'SettingID')
+	INSERT INTO [Base_Setting]
+		([Co_Id], [User_Id], [Setting_Id], [Setting_Desc]
+		,[Setting_Value], [Stamp_User_Id], [Stamp_DateTime]
+		,[Setting_Value_DataType], [Setting_Value_MinimumValue], [Setting_Value_MaximumValue]
+		,[Upload_DateTime], [RecordStatus_ID])
+	VALUES
+		(0, 0, 'SettingID'
+		, 'SettingDesc'
+		, 'Value', 0, '####-##-##'
+		, 'String', NULL, NULL
+		, NULL, 1)
+		
+-- Insert Document Type	
+IF NOT EXISTS (SELECT * FROM Common_DocumentType WHERE DocumentType_ID = 0)
+	INSERT INTO [Common_DocumentType]
+		([DocumentType_ID]
+		,[DocumentType_Desc]
+		,[Stamp_DateTime]
+		,[Stamp_UserID]
+		,[Upload_DateTime]
+		,[RecordStatus_ID])
+	VALUES
+		(0
+		,'Document Type Desc'
+		,'YYYY-MM-DD'
+		,0
+		,NULL
+		,1)
+
+-- Insert Entity Type	
+IF NOT EXISTS (SELECT * FROM Common_EntityType WHERE EntityType_ID = 0)
+	INSERT INTO [Common_EntityType]
+		([EntityType_ID]
+		,[EntityType_Code]
+		,[EntityType_Desc]
+		,[Stamp_UserID]
+		,[Stamp_DateTime]
+		,[Upload_DateTime]
+		,[RecordStatus_ID])
+	VALUES
+		(0
+		,'Code'
+		,'Desc'
+		,0
+		,'yyyy-mm-dd'
+		,NULL
+		,1)
+     
+-- Insert SettingForm
+IF NOT EXISTS (SELECT * FROM Base_SettingForm WHERE Form_ID = #)
+	INSERT INTO [Base_SettingForm]
+		([Form_ID], [Form_Code], [Form_Name], [RecordStatus_ID]
+		,[Stamp_UserID], [Stamp_DateTime], [Upload_DateTime])
+	VALUES
+		(#, '##-###', '', 1
+		,0, 'yyyy/mm/dd', NULL)
+
+-- Rename Table
+IF NOT EXISTS (SELECT o.[NAME] FROM sysobjects o WHERE o.[Name] ='OldTableName')
+	exec sp_rename 'OldTableName', 'NewTableName'
+
+-- Rename Column
+IF NOT EXISTS (SELECT o.[NAME] FROM sysobjects o INNER JOIN syscolumns c ON o.id = c.id WHERE o.[Name] ='OldTableName' AND c.[Name] = 'OldColumnName')
+	exec sp_rename 'OldTableName.OldColumnName', 'NewColumnName'
